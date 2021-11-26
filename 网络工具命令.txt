@@ -1,0 +1,9 @@
+netstat -nat|grep 192.168.42.47:8080
+
+netstat -an |grep tcp   查看所有tcp连接包括LISTEN状态
+
+sudo tcpdump -nn -X -S 'port 6000' -c 5
+
+ strace -t -T -v -e trace=network -e trace=desc ./cli 
+
+ strace -t -T -v  ./cli 

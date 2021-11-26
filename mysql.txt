@@ -1,0 +1,35 @@
+yx    
+dl123456
+
+
+ftp://192.168.121.73/
+
+cd H:\Robot\rampp\mysql\bin
+mysql -uroot -p
+use  Robot;           
+
+
+show databases; 
+
+
+update InspectionResult set UploadFlag=1
+show  tables；     
+show create table  runoob_tbl；       //查看表结构
+show  index  from             //显示数据表的详细索引信息，包括PRIMARY KEY（主键）。
+ 
+quit/exit                     //退出mysql
+column  行
+
+
+Administrator
+jyb-2017
+
+win下 ：mysql -uroot -p  后面不能跟密码
+设置gbk中文不会乱码
+查找时，字符串关键字要加单引号
+
+查询没有结果，断点到查询出，查看sql语句，发现id特别大，回头看sprintf，找到id出，看到id是字符串但是用了d%，没有用s%
+1633762354
+
+git cd    （到c盘下）
+git  cd Desktop/vs13_icecli/

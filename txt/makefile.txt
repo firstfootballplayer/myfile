@@ -1,0 +1,21 @@
+从网上复制的file由于符号：格式不正确导致不能make出现Makefile:1: *** missing separator. Stop.
+
+多个.c用only头文件可以直接用，因为include了编译器会自动去相应目录下找头文件
+
+
+objects = main.o mytool1.o mytool2.o
+#objects = cli.o
+
+CC = gcc
+
+omain: ${objects}
+
+	${CC} -o $@ $^ -levent
+
+.c.o:
+
+	${CC} -c $< 
+
+clean:
+
+	rm *.o 

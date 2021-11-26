@@ -1,0 +1,17 @@
+
+光标选择到行底	shift+end
+光标选择到行首	shift+hone
+光标选择到底	ctrl+shift+end
+光标不同方向选择	shift+方向键
+光标右跳单词首	shift+f
+ctrl+g：输入行数
+ctrl++：放大整体
+ctrl+-：缩小整体
+ctrl+shift+\：跳转匹配括号
+shift+alt+上下：上下复制行
+alt+enter：选择匹配的所有项，同时编辑
+alt+单击：插入光标
+shift+alt+拖动鼠标：列选择
+ctrl+`：打开关闭终端
+ 
+alt+鼠标：vs列

@@ -1,0 +1,23 @@
+htop：查看性能情况，1234可能是4个核心情况
+cp dir1/a.doc dir2 表示将dir1下的a.doc文件复制到dir2目录下
+
+cp -r dir1 dir2 表示将dir1及其dir1下所包含的文件复制到dir2下
+
+cp -r dir1/. dir2 表示将dir1下的文件复制到dir2,不包括dir1目录
+
+说明：cp参数 -i：询问，如果目标文件已经存在，则会询问是否覆盖；
+
+find /xx -type f ! -name "file10" -exec rm -f {} \;     
+
+cmake 转移主机后出错，要重新配置删除以前的（文件路径不一样），到build下面cmake。。
+cmake 配置了cpp只能对cpp有效对c没有效果
+
+比如我想查看当前目录下的python3目录的容量，命令就是：du -sh python3  （不加s列出每项的情况，加了总体情况）
+
+查看磁盘使用情况 df -h
+
+find ./ -name '*.h' -exec grep -H -n query {} \;    搜索指定目录下的文件，从中搜索字符串
+grep -r ‘energywise’ *        #在当前目录及其子目录下搜索'energywise'行的文件
+grep -l -r ‘energywise’ *     #在当前目录及其子目录下搜索'energywise'行的文件，但是不显示匹配的行，只显示匹配的文件
+
+

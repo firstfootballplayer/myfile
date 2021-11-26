@@ -1,0 +1,75 @@
+几个依赖都要编译
+Thread.cc:158：对‘pthread_detach’未定义的引用，编译时没有-lpthread
+对‘pthread_atfork’未定义的引用 编译时没有-pthread
+
+TcpServer中有三个主要的成员类，分别是：Acceptor，EventLoopThreadPool，EventLoop*。其中： 
+Acceptor负责管理服务器的监听socket； 
+EventLoopThreadPool用于创建和管理线程池； 
+EventLoop*是一个指针，它指向一个用户代码中创建的EventLoop对象，为TcpServer专用，相当于是为主线程提供的Loop循环。 
+还有回调函数，接收用户的回调
+TcpServer的构造函数将newConnection绑定到Acceptor类的回调用于处理新连接到来
+用户调用setMessageCallback等函数设置自己的回调
+TcpServer::start()开启线程池threadPool_->start(threadInitCallback_);创建n个线程，EventLoopThread构造函数中将自己的threadFunc绑定到
+Thread thread_;中，将n个线程放入容器， loops_.push_back(t->startLoop());调用EventLoopThread的>startLoop其中调用Thread::start()
+开启线程，执行之前绑定的EventLoopThread::threadFunc其中创建局部变量 EventLoop loop;执行loop函数
+在TcpServer::start()函数中接着执行Acceptor::listen，调用listen加入监听队列，其中调用acceptChannel_.enableReading();其中调用 Channel::update()
+将fd加入到本地的loop中的epoll中，等待连接的到来
+
+接着在main中调用loop.loop();其中调用poller_->poll(kPollTimeMs, &activeChannels_);其中调用epoll_wait接着调用 fillActiveChannels(numEvents, activeChannels);
+将可用事件加入到激活队列，接着在poller_->poll执行currentActiveChannel_->handleEvent处理激活事件即执行用户回调，在主线程中执行
+的回调是TcpServer::newConnection其中执行threadPool_->getNextLoop()即roundrobin返回下一个线程loop，接着new一个TcpConnectionPtr conn
+将fd ip传入，接着conn->setMessageCallback(messageCallback_);设置用户回调，接着TcpConnection::connectEstablished将新连接的fd
+加入到该线程中loop的epoll中设置相应事件。在线程池中的loop中调用的是TcpConnection::handleRead其中inputBuffer_.readFd将数据读到
+buff中
+
+inputBuffer_.readFd函数其中开辟局部缓存用struct iovec vec[2];将buff缓存和局部缓存绑定到0,1判断可写空间是否大于局部缓存空间来决定
+是否使用局部缓存 const int iovcnt = (writable < sizeof extrabuf) ? 2 : 1，const ssize_t n = sockets::readv(fd, vec, iovcnt);
+读到数据后如果读到n个小于可写则直接  writerIndex_ += n，如果大于 则让写索引等于buff长度writerIndex_ = buffer_.size()，接着
+append(extrabuf, n - writable);其中调用 ensureWritableBytes(len)其中makeSpace(size_t len)如果当前可写空间+读索引的
+前置空间小于n则将buff resize，否则将可读区域整体迁移到初始位置即读索引的初始位置。在append函数中接着讲数据copy
+
+在用户回调里buf->retrieveAllAsString()其中调用retrieveAsString(readableBytes());其中 string result(peek(), len)将数据全部copy到res
+接着执行retrieve(len);其中已读len小于可读则读索引+len，否则将读写索引初始化可读为0；
+发送数据调用TcpConnection::send其中调用 TcpConnection::sendInLoop如果可写标志没有置位输出缓存没有数据则直接写，如果一次没写完还有
+剩余，则放入到输出缓存里接着channel_->enableWriting();设置可写事件，在可写回调函数TcpConnection::handleWrite()
+写输出缓存里的数据，每次写完判断输出缓存是否还有数据，如果没有了 channel_->disableWriting();
+
+线程类，有和线程相关的数据，pid pthreadid 等等，构造函数传入function，start函数开启创建一个线程，用一个countdown
+倒计时进行同步（用条件变量，条件是 计数值），调用一次countDown减一，线程池类，任务队列，互斥锁，判断任务队列非空和非满的条件变量
+线程容器，start函数开启线程池，创建n个线程，他们的绑定函数都是线程池中的void ThreadPool::runInThread()函数，这个函数运行于一个循环中
+刚开始会阻塞在take函数其中阻塞在条件变量上直到有任务放进任务队列，呗唤醒线程取出任务释放非满信号，任务返回，开始执行。用户通过
+run函数将自己的任务加入到任务队列，其中会判断是否满，如果满阻塞在非满条件变量上，将任务放入任务队列，在释放非空信号
+
+Logger类重载了这个类的<<号，在重载函数里将输入写入到类中的缓冲区buff，用户写日志时通过Logger类的临时变量的重载符
+写入，构造函数会在buff前面写上时间，tid，等级等信息，析构函数将缓冲区内容写入到AsyncLogging的大块缓冲区里，这个类里会维护
+两块缓冲区，写入时判断缓冲区有没有满，如果满了将该缓冲区放入容器里，换下一块写入，接着释放条件变量通知异步日志写入线程
+开始想日志文件中写入，这个线程中的条件变量是定时的3秒内没有写满也会被唤醒写入日志。pthread_cond_timedwait
+
+执行Acceptor的listen函数获得监听fd
+newConnection函数
+
+
+日志的每行的开头在Impl的构造函数，结尾在impl的析构函数
+maxQueueSize_设置0时线程池任务队列不限个数
+http改post相关在httpcontext中的parseRequest函数，目前有头部大小写对不上导致解析不出来的情况
+TcpServer::newConnection里设置回调 conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1)); // FIXME: unsafe
+ TcpConnection::handleRead里判断要不要删除，里面有前一个的回调
+新连接建立在TcpServer::newConnection的connectEstablished
+写是在TcpConnection：：send函数中，可写回调TcpConnection::handleWrite()
+
+fd的close在  conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));  // FIXME: unsafe
+ TcpConnection::forceClose()会调用closeCallback_(guardThis);即tcpserver的(&TcpServer::removeConnection, 其中
+   size_t n = connections_.erase(conn->name());删除后会析构，在Socket::~Socket()  sockets::close(sockfd_);关闭
+ioLoop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));函数会调用wakeup唤醒select做清理工作
+可以先send后再close，除非没写完，剩余的close后不能写
+
+logsyserr 会在前面调用strerror打印系统错误情况，
+
+TcpClient构造函数绑定自己的newConnection给connector_，接着开启void TcpClient::connect()，其中调用Connector::connecting(sockfd);
+绑定Connector::handleWrite，在连接建立后立即测试是否能产生可写事件，在可写回调清除Connector：：的channel调用新连接回调即
+TcpClient::newConnection其中new一个tcpconnection将fd，回调函数等绑定，在connectEstablished（）中enable可读事件，调用用户的
+connectionCallback_
+
+在tcpclient中调用conn->forceClose();会清除该链接的channel，reset自己的TcpConnectionPtr connection_  该连接的conn的强指针置零后析构
+
+

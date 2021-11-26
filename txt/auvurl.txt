@@ -1,0 +1,17 @@
+ffmpeg -re -i test.mp4 -rtsp_transport tcp -vcodec h264 -f rtsp rtsp://localhost/test
+ffmpeg.exe -re -i test.mp4 -f flv rtmp://192.168.59.237:1935/live
+ffmpeg.exe -re -i test.mp4 -c copy -f flv -rtmp_app live -rtmp_playpath class rtmp://192.168.59.237:1935
+
+rtsp://localhost/test
+rtsp://192.168.59.237:8554/test.mkv
+
+rtmp://192.168.59.237:1935/live/123
+rtmp://192.168.59.237:1935/vod/output.flv
+
+./objs/srs -c conf/srs.conf
+to start the srs server, with config conf/srs.conf.
+make[1]: Leaving directory '/home/zjm/srs/srs-4.0release/trunk'
+
+srs启动失败，因为Nginx也运行着用着同样的1935端口被占用了
+
+service nginx restart

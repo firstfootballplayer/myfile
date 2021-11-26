@@ -1,0 +1,3 @@
+wsasend投递后get返回，打印数据：为send的数据，证明periodata数据不会变只有当再次接受后才会覆盖，
+PerHandleData中的数据可以对应不会改变，考虑将periodata绑定在其中
+发送时PerIoData->databuff.buf 是个指针指向要发送数据 PerIoData->databuff.len 最好等于发送数据长度，不然指向另一个数组过长越界

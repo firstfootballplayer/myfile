@@ -1,0 +1,44 @@
+gdb 中用dir [filepath]找到要调试文件的路径，可添加多个路径
+set debug-file-directory可不进入c标准库c++还是能进
+
+一运行程序崩了，看日志信息，大概在哪个位置，信息量少可能在开头，注释掉后面的从前往后一点点编译运行，看看是那块出问题了
+
+windows FILE打开510最多，用完释放，不释放fopen返回null，在调用fwrite会出现expresssion :(stream = null)
+
+时间跨度太大，几百万跳信息，一直new进vec导致allocator_bad,后查看vs进程内存，发现达到了2g
+
+自己写了select后，用strace发现，select一直返回1，说明一直有事件发生，日志看到timefd read error，想自己没有添加过定时器事件怎么会
+定时器回调函数一直在调用，用pause在timer的构造函数看看有没有生成过定时器，发现没有，在strace里看到select的fd有3,4,5有两个怎么会
+加上去的，在update函数里查看堆栈信息，发现有3次调用了，fd3,4是库初始化时绑定的timerfd和wakeupfd，在update函数过滤这两个不绑定
+发现问题仍在但是这次连接后没有问题了，当客户端发送消息时仍存在问题，只是不再是timefd read error了，变成了另一个错误，怀疑fd_set问题，
+经打印fd_set的值比较了wset和oset发现没有问题，通过gdb发现fillactive函数里if(FD_ISSET(sockfd, &w_readset_)) 不成立，select返回了怎么会找
+不到可读事件呢？问题基本锁定在这个函数里，因为知道了客户端的fd是7，通过打印看看fd能不能对上，仔细观察发现，写的逻辑有问题，gdb里
+调试第一次总是不成立是因为这里是for第一次不是可读fd而是listenfd=5，自然不会判断成功而且
+ activeChannels->push_back(channel); if(--numEvents <= 0) break;写在了if的外层，所以即使不成功事件也被推入激活列表，且numevents总是
+调用第一次就break出去了，在执行激活事件时，是在执行第一个fd的回调，即listen的回调自然出错了，之前是在执行timefd的回调
+
+调试第三方库，在连接建立回调函数中设置定时器（作用是接收响应超时），在可读回调函数取消定时器，用socket工具做服务端测试发现在及时
+收到数据后能成功取消定时器，但是在放到运行环境中不管有没有收到数据都会超时，怀疑是用工具手点比较慢，而运行环境中服务器收到请求直接
+回复，在连接建立回调中设置定时器可能还没有绑定到io复用上，取消函数被调用后才绑定上去的导致取消函数失效，在可读回调取消函数前加延时
+验证，不管用。用strace查看程序运行情况，发现在readv=0和closefd中间还调用了一次timerfd_settime设置的时间也是我设置的，怀疑连接关闭时
+又设置了一次超时，在源码里找到timerfd_settime这个函数在调用它的函数里打印堆栈信息，看到确实在连接关闭的处理函数中会调用一次连接建立
+回调函数即我设置的那个，所以不管有没有收到响应都会超时。而用socket工具没有测出来是因为，我在回复消息后没有断开连接，所以没有调用到
+连接关闭处理函数
+
+在channel析构函数中assert(!addedToLoop_);失败，addedToLoop_这个标志位是在Channel::remove()函数中置位的，所以应该是没有调用到
+这个函数过，经验证确实没有，在可读回调里执行 conn->forceClose()其中会将TcpConnection::forceCloseInLoop放入loop的任务队列，接着执行
+ loop_->quit();将 quit_ = true;在下一次循环退出，在loop函数中执行完这次的可读回调后接着 doPendingFunctors();即运行在可读回调放入任务队列
+的函数即TcpConnection::forceCloseInLoop而在这个函数中经一些处理后又会将TcpConnection::connectDestroyed放入任务队列，这样这个函数
+只能等到下一个循环才能执行了它里面才会真正调用到Channel::remove()，而到下一个循环会退出loop了这个函数没有机会执行了
+
+    printf("-------------------start--------------------------------\n");
+    printf("%s\n", libmevent::CurrentThread::stackTrace(true).c_str());
+    printf("-------------------end--------------------------------\n");
+
+       printf("pause\n");
+            pause();
+
+     static int tt = 0;
+        printf("%d\n", tt++);
+
+ fprintf(stderr, "error: %s\n", strerror(errno)); 
