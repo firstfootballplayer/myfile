@@ -31,14 +31,3 @@ windows FILE打开510最多，用完释放，不释放fopen返回null，在调�
 的函数即TcpConnection::forceCloseInLoop而在这个函数中经一些处理后又会将TcpConnection::connectDestroyed放入任务队列，这样这个函数
 只能等到下一个循环才能执行了它里面才会真正调用到Channel::remove()，而到下一个循环会退出loop了这个函数没有机会执行了
 
-    printf("-------------------start--------------------------------\n");
-    printf("%s\n", libmevent::CurrentThread::stackTrace(true).c_str());
-    printf("-------------------end--------------------------------\n");
-
-       printf("pause\n");
-            pause();
-
-     static int tt = 0;
-        printf("%d\n", tt++);
-
- fprintf(stderr, "error: %s\n", strerror(errno)); 

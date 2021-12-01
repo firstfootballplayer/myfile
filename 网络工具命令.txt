@@ -7,3 +7,16 @@ sudo tcpdump -nn -X -S 'port 6000' -c 5
  strace -t -T -v -e trace=network -e trace=desc ./cli 
 
  strace -t -T -v  ./cli 
+
+valgrind --log-file=./valgrind_report.log --leak-check=full --show-leak-kinds=all --show-reachable=no --track-origins=yes ./
+–log-file 指定报告输出文件 –track-origins=yes 是否显示未定义的变量，在堆、栈中被定义没有被initialised的变量都被定义成origins。
+默认是关闭这个option的。 –show-leak-kinds=all 这里可以支持的选项有[definite|possible]，一般只需要去关注definite（绝逼），possible是可能会存在。
+–leak-check=full 当服务器退出时是否收集输出内存泄漏，选项有[no|summary|full]这个地方我们将其设置成全输出，默认将会使用summary方式。
+–workaround-gcc296-bugs=yes 如果你的gcc存在对应的bug，则要设为yes，否则有误报 最后是被检测程序及其参数。
+
+Conditional jump or move depends on uninitialised value(s) ：提示告诉我们依靠没初始化的变量进行条件判断 
+still reachable：多数情况不是问题，比如程序是一个服务，一直运行一个while循环，而new出来的对象如果只能
+在析构delete，那么对象就永远不会被释放，valgrind就会报这样的问题 指的是内存指针还在 还有机会使用或者释放
+如果你后面的程序不用或者不释放也会泄漏  valgrind在当时还不知道以后会不会泄漏
+
+
