@@ -1,0 +1,2 @@
+map插入时要用insert(make_pair(a, a));insert（{a, a});缺失makepair会no match for ‘operator++’ (operand type is ‘std::__cxx11::basic_string<char>’)
+有序无序关联容器都不会按插入顺序输出

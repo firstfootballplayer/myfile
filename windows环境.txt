@@ -1,0 +1,6 @@
+git ssh ：ssh-keygen -t rsa 会显示在什么位置（Enter file in which to save the key (/c/Users/dell/.ssh/id_rsa):Press enter）
+第二步：输入passphrase（本步骤可以跳过）设置passphrase后，进行版本控制时，每次与GitHub通信都会要求输入passphrase，
+以避免某些“失误，通常不设置，按enter跳过即可（可以一直默认enter下去就好）
+
+
+

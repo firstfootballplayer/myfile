@@ -1,0 +1,15 @@
+在头文件里定义函数会报重复定义，加上内联可消除错误
+每添加一个源文件都要重新cmake一下不然找不到
+vscode对作用域可能会误判报错（不影响编译），自己加上作用域可消除
+在类中使用了类指针的成员，报不允许使用不完整类型，（在类中声明，在cc中实现）
+宏定义里不需要；
+写do while的宏时要在行加上\每行要挪到对应的位置
+使用gprof 使用在add_compile_options(-std=c++11 -Wall -g -pg)   target_link_libraries (clit PRIVATE  libmevent_base libmevent_net "-pg")
+gcc中extra qualification错误  在类中函数声明前不要在写作用域了
+cmake 转移主机后出错，要重新配置删除以前的（文件路径不一样），到build下面cmake。。
+cmake 配置了cpp只能对cpp有效对c没有效果
+警告显示-Wunused-but-set-variable，意思就是变量没有被使用。要是我们不想看到这样的警告，则在编译中加入 –Wno-unused-but-set-variable即可。再来编译，就不会产生warning了。
+函数返回值是类的对象时，如果没有return一个对象则会引起segmentfault
+
+
+

@@ -1,0 +1,153 @@
+send函数不能直接用“”“”应该用数组，字符指针
+recv 函数加了最后一个参数，waitall后阻塞了，设置0正常运行
+recv在对方掉线后，会解除阻塞状态然后返回0，select变可读
+FD_ISSET（fd，&set）检查fd是否在set这个集合里面
+select返回-1 可能是字符集为空
+send函数在连接断开时返回-1
+ser关闭fd后仍受到cli的消息，因为tcp全双工，此时ser不能写，cli能写所以ser能受到？？？？？？？？？？？？？？
+！！！！！！if（ret = 0）赋值了，导致ret0，逻辑错误，尽量用const
+
+在派生类对象中生成基类对象指针操作，容易出问题。改用了不相关的两个类正常
+将fd_set fd_set 类型与变量同名，编译器一直报 应输入表达式错误，linux下能编译
+连续send时 ，recv返回数量正确，但是打印只有前一个内容，send间加10ms延时正常
+
+T* array[] 在指针数组中delete array[0]时出现.exe 已触发了一个断点。可能是释放指针内存错误，
+改为array[0] = null，经检查是数组中的元素不是经new分配的动态内存，不能用delete
+
+头文件包含出问题，相互包含导致？？？？？？？头文件不要互相包含，可以把头文件包含在cpp文件中，
+函数实现放在cpp中，（头文件不能相互包含，类如需被外部使用定义需放在头文件，相互关联的两个类只能
+放在同一个头文件中定义）
+
+friend class ClientInfo;
+typedef std::map<int, std::pair<ClientInfo*, int>> MAP;这两行调换顺序编译报错
+
+客户端断开连接后，服务端recv一直可读，应该判断0或-1后直接关闭fd
+
+将数据库结果row_[i]直接与“192.168”比较不行，得将结果赋值给string在和字面值比较正确
+
+包含libcurl头文件，在工程中用#include "curl/curl.h"，用<>时错误
+vs包含时选择文件夹里面看不到文件。
+libcurl使用post时必须要有消息主体
+
+用自己的debugprint会整个程序卡主，单独cout没问题
+recv单词没接收完，会再次进入recv
+
+当客户端bind一个port，第一次连接上退出后，处于4次挥手状态，该port被占用，在结束状态前再次运行程序所以会连接不上（为什么第二次不会阻塞在conn）
+当客户端system时，因为是直接中断程序，所以服务端判断通信结束关闭了fd，所以客户端立刻运行能连接上
+当处于port被占用，再次连接时conn立刻返回-1，成功时返回0，服务器不在线阻塞一会后返回-1
+
+用libcurl终端卡主没有输出，经调试，仅仅是终端卡主了，程序仍在运行。卡主是因为用string，用数组不会卡主。
+用http时，输出烫烫烫是字符串结尾没有\0结束符，cout会将未初始化也打印出来，一直到数组结尾（send时长度不加strlen+1时出现）。
+
+多线程断点，发现窗口没有输出了
+iocp客户端掉线时get函数返回0，错误码〖64〗-指定的网络名不再可用。 客户端正常关闭时，get返回1，接收数据量为0
+打印遇到字符串结束符就不再输出后面的字符串了
+当recv不及时，缓冲区会一直叠加，到下一次recv一起取出
+
+recv中的buff最好进行初始化char head[1000]={0};这样打印不会有烫烫烫了，找到\0了
+
+httppost的长度要对上才能解析出来
+用postman，回复时send的字节数用了sizeof buff，导致字数对不上，应该用strlen+1，
+mysql col=id处 用字符串表示id  用s% 如果用了d%id值变了
+
+服务端关闭后 客户端再次连接使用的fd可能还是上次的，导致一直可读，应该判断connect的返回值，而且通过read的返回值也能判断是否-1
+
+if (ffd.cFileName == L"testh")这种不对比较不出来为string  应该用if (wcscmp(ffd.cFileName, L"testh") != 0)
+
+if (ffd.cFileName == L"." || ffd.cFileName == L".."){这种方法错误不会执行continue，将目录“.”带到了递归函数中所以一直在递归
+continue;
+
+#define UNICODE
+#ifdef UNICODE
+#define FindFirstFile  FindFirstFileW
+#else
+#define FindFirstFile  FindFirstFileA
+
+有些文件没有.xxx ,会不会导致string 越界，验证了会导致越界
+
+cout会实际已经打印但显示不了的情况？经检查是终端最多显示9999行，之前的看不到了
+替换的时候要记得用全字匹配
+
+\\前一个\不算在字符串中，所以少\。
+
+printer.CStr() 不算c_str（）
+类型
+
+libcurl请求过后有回复，不然，导致重连，一些问题的
+
+函数返回局部变量的指针会消失，应该返回局部变量的值，不要返回局部变量的指针，得用变量接收它在使用
+声明了构造，析构函数必须要有定义，不然fatal error LNK1120: 1 个无法解析的外部命令；
+
+当改变工程文件夹名字后 原来设置的包含头文件 库的路径都对不上了，需要重新设置改正文件夹名字
+string 在类中直接初始化会错误，只能拷贝。string不在类中能直接初始化
+头文件最好不要包含在头文件中，可能出现重复定义
+由于调用pthread_cond_wait()而被阻塞的线程在被唤醒时，其需要等待的条件可能依然是未被满足的(这种情况被称为spurious wakeup)，
+所以需要在循环里继续做检查，如果真的发生了这种情况就继续等待
+一个生产者可能对应着多个消费者，生产者向队列中插入一条数据之后发出signal，然后各个消费者线程的pthread_cond_wait获取mutex后返回，当然，
+这里只有一个线程获取到了mutex，然后进行处理，其它线程会pending在这里，处理线程处理完毕之后释放mutex，刚才等待的线程中有一个获取mutex，
+如果这里用if，就会在当前队列为空的状态下继续往下处理，这显然是不合理的。
+
+if ((row_ = mysql_fetch_row(res_)) == nullptr)后又while ((row_ = mysql_fetch_row(res_)))  不能连续调用mysql_fetch_row
+mysql_real_query和mysql_store_result的返回值不能判断查询结果是否为空，能判断查询语法，字符串要加' '。
+
+mysql掉线mysql_real_query和mysql_store_result返回异常，mysql_error打印MySQL server has gone away；如果执行mysql_fetch_row程序崩溃的。
+出现在libcurl的回调函数无法使用mysql_real_query的情况，（经检查cb函数应该用全局函数不能用类函数）
+GetPrivateProfileString读取中文错误，用WritePrivateProfileString写入过的ini读取正确。
+
+因为有一些是需要翻墙才能下载的。并不是离线包就有的。大家可以看离线包有的功能就会自动从离线包安装。没有的话估计很多是需要翻墙才能下载安装的。
+选择跳过可能会再次出现是因为下一个包也找不到，一直跳过就行了
+
+用==比较字符串事实上比较的是地址，地址相同则正确，两个字符串内容相同地址不同不正确，应用strcmp
+
+智能指针被赋值后先构造在析构
+
+windows FILE打开510最多，用完释放，不释放fopen返回null，在调用fwrite会出现expresssion :(stream = null)
+
+tinyxml用for添加元素用stl会出错（未查明）
+
+ice3.6早debug模式下容易出现内存错误，release没问题
+
+之前有个mysql用指针不行，要用取地址，发现是因为指针没有new一个对象
+
+在头文件中参数要加上作用域，std：：不然报错 error C4430: 缺少类型说明符 - 假定为 int。注意:  C++ 不支持默认 int
+
+比较字符串时“”后容易带一个空格导致比较错误
+
+stoi("");会抛出异常
+
+string = null时会报错
+
+sscan前缀都要对上
+
+extern 常量有点问题，要带上值
+
+移位结合赋值，会进行提升不会溢出，对同类型移位赋值会溢出，cout时会提升
+
+“”“”双引号里面的双引号没有结束符的
+
+mysql 如果为空也会返回，res_不一定是null
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
