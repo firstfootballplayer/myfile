@@ -1,8 +1,8 @@
 netstat -nat|grep 192.168.42.47:8080
 
 netstat -an |grep tcp   查看所有tcp连接包括LISTEN状态
-
-sudo tcpdump -nn -X -S 'port 6000' -c 5
+ -c 5
+sudo tcpdump -nn -X -S 'port 6000'
 
  strace -t -T -v -e trace=network -e trace=desc ./cli 
 
@@ -19,4 +19,4 @@ still reachable：多数情况不是问题，比如程序是一个服务，一�
 在析构delete，那么对象就永远不会被释放，valgrind就会报这样的问题 指的是内存指针还在 还有机会使用或者释放
 如果你后面的程序不用或者不释放也会泄漏  valgrind在当时还不知道以后会不会泄漏
 
-
+git 有文件的增减时必须要add，只是文件内容变化，可以不用直接commit

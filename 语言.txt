@@ -1,2 +1,10 @@
 map插入时要用insert(make_pair(a, a));insert（{a, a});缺失makepair会no match for ‘operator++’ (operand type is ‘std::__cxx11::basic_string<char>’)
 有序无序关联容器都不会按插入顺序输出
+
+vector扩容时，可能会搬运元素，析构原来的，list不会，在resize时会新建元素保证总共有它的参数个元素。resize和reserve使capacity等于参数
+pushback不够时才乘以2
+vector扩容，先搬运，在析构
+
+uniqueptr放入vector时要用move。
+
+struct 在gcc在没有默认构造函数

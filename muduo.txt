@@ -71,5 +71,9 @@ TcpClient::newConnection其中new一个tcpconnection将fd，回调函数等绑�
 connectionCallback_
 
 在tcpclient中调用conn->forceClose();会清除该链接的channel，reset自己的TcpConnectionPtr connection_  该连接的conn的强指针置零后析构
+ 日志有字符上限 打印不出来
 
-
+心跳，维护一个固定长度队列，它的类型是hset，hset的类型是包含tcp连接类的弱指针结构体，当连接建立时，用shared新建一个结构体它将tcp连接的
+指针赋值给内部的弱指针，然后放入队列的队尾元素中，同时新建weakptr接收新建的sharedptr，将它放入tcp连接类中，每当收到新消息和心跳时通过
+调用tcp连接类中的weakptr的lock函数，生成新的一个关于结构体的shared将它放入队尾元素中，在定时器函数中会定时出队，和将新的元素在入队，
+如果在队列长度秒内没有收到新消息，则结构体析构，在析构函数中调用弱指针的lock确认这个连接还在，然后关闭该连接。

@@ -1,12 +1,16 @@
 yx    
 dl123456
 
+海康nvr
+admin
+dls123456
 
 ftp://192.168.121.73/
 
 cd H:\Robot\rampp\mysql\bin
 mysql -uroot -p
 use  Robot;           
+select Result_ID from InspectionResult where UploadFlag=0 limit 1;
 
 
 show databases; 
