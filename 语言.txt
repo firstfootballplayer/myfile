@@ -8,3 +8,10 @@ vector扩容，先搬运，在析构
 uniqueptr放入vector时要用move。
 
 struct 在gcc在没有默认构造函数
+
+同一作用域内变量名和函数名不能相同，一定要用可以加函数作用域
+
+静态变量 在源文件定义初始化，不能加static 加上作用域
+map。insert时最好用makepair，独立指针用move
+形参用const string&可以接受char*，不能缺少const否则报错。
+不允许指针指向不完整的类类型（只有声明没有定义，头文件没有包含）

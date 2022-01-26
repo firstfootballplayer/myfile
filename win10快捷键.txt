@@ -5,7 +5,7 @@ Ctrl+Shift+N 快速创建文件夹
 Win+D—显示桌面，隐藏窗口再按一次Win+D可以取消隐藏的窗口
 任务管理器Ctrl+Shift+Esc
 打开一个窗口然后使用快捷键win+方向键（←/→）即可实现分屏
-F5-刷新
+F5-刷新Ctrl+r
 Ctrl+N 新建
 Ctrl+T：创建新的标签页
 Shift+字母：切换字母大小写输入

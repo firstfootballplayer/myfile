@@ -1,0 +1,10 @@
+ip.src==192.168.121.91 or ip.dst==192.168.171.31
+tcp.srcport==80  tcp.dstport==80
+http.request.method=="GET"
+ip.src==192.168.101.8 and http
+udp.port==10001
+sip.Method != MESSAGE
+sip.Content-Length!=287 and sip.Content-Length!=187
+sudo tcpdump -nn -X -S 'port 6000'
+sudo tcpdump -nn -X -S udp and dst 192.168.121.91 and src 192.168.121.80
+

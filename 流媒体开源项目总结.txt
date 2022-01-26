@@ -1,0 +1,26 @@
+myRtspClient:
+使用正则表达式解析（目前发现必须完全匹配多少一个空格都出错，自适应性不强）
+接收和解析rtsp时调用read读一个字节判断是不是\n，（sc过多，判断强度不够）
+#define SEARCH_PORT_RTP_FROM 	10330		（udp端口）DoSETUP中的SetAvailableRTPPort（在这探测可用的端口）
+media_session->RTP_SetUp(RtspOverHttpDataSockfd)这设置udp;RTPInterface->MyRTP_SetUp在这打开端口设置地址等等
+海康之前因为有23w的关键帧太大没有接收进来，所以播放卡主。
+RtspClient::ParseSDP(string SDP)中SDPData::parse(string& sdp)其中解析sdp数据将数据存起来（sdpOriginStruct，sdpConnectionData，
+sdpSessionTime，mediaInfoMap里面有audio和video的信息），在while中查看audio和video是否已在MediaSessionMap（key是字符串
+记录了audio，vedio这样不能复用多个源的时候重复时会跳过）中，没有则创建一个，将sdp中的数据复制给它，然后放入MediaSessionMap
+MediaSession中保存和媒体相关的信息，rtp的对象等等。在Client.DoSETUP("video", false);中确认创建audio还是vedio
+Client.SetVideoByeFromServerClbk(ByeFromServerClbk);在MyRTPUDPSession::OnRemoveSource(RTPSourceData *dat)中执行
+
+sip协议：
+via 和user agent可以确定对方是谁
+branch一次问答，callid一次功能请求（register）
+请求第一行的sip号代表要请求谁，可能是主机，从设备
+200 ok时 via是要应答的主机的（即接收者自己的）ack不是
+log的message调试（主动请求，注意字段漏写，tag，callid，branch容忍度较高用上次的也可随便给个，xml长度最后发现是多一个空格才差
+一个字节，空格标点符号的差异很难察觉，仔细检查）
+SN 可能序列号，应答一致
+
+客户端：从服务器拉取rtsp，转成rtmp推到Nginx，web控制客户端进行点播直播从Nginx拉流播放，客户端跑机器人上
+单个rtsp拉流udp转发vlc，cpu5%
+
+主线程listenfd，监听rtsp连接和sipserver的udpfd，线程池rtsp连接，当收到setup建立udpfd用于接收发送，通过sipserverfd开始invite对应的
+设备，

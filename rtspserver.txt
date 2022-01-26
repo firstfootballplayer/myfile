@@ -1,0 +1,28 @@
+
+
+MediaSource构造函数将4个avframe推入inputqueue，H264FileMediaSource构造函数将4个 source->readFrame();推入线程池，定时器0.25
+触发，到执行定时回调时，4个任务已经完成，所以in=0 out=4
+void RtpSink::timeoutCallback(void *arg) {
+  RtpSink *rtpSink = (RtpSink *)arg;
+  AVFrame *frame = rtpSink->mMediaSource->getFrame();
+  if (!frame)   return;
+  rtpSink->handleFrame(frame); //发送
+  rtpSink->mMediaSource->putFrame( frame); //将readFrame函数放进线程池运行，读取帧
+}
+在定时器函数中输入输出 frame时间上串行地相互交换,维持总量4，相互交换不变
+ 定时器在主函数的H264RtpSink::createNew()里面开启，在构造函数里调用addTimedEventRunEvery（）
+发送帧在rtpSink->handleFrame(frame); 中，其中调用到MediaSession::sendPacket的回调（在主函数的 session->addRtpSink将自己的回调
+设置给rtpSink->setSendFrameCallback），只有RtpInstance->alive() == true才真正发送在RtspConnection::handleCmdPlay()的调用 
+mRtpInstances[i]->setAlive(true);接着真正发送数据
+
+RtspConnection::handleCmdSetup()中调用createRtpRtcpOverUdp其中调用createNewOverUdp(rtpSockfd, rtpPort, peerIp, peerRtpPort);
+创造一个连接，
+ RtspConnection::handleReadBytes()其中parseRequest其中parseRequest1解析方法，2根据不同方法解析具体内容
+
+loop函数里的  mPoller->handleEvent();真正调用SelectPoller::handleEvent()里面有select
+trackid在setup请求在url的后面标志，在descr响应中的sdp中带上了trackid
+
+RtspConnection析构函数调用mSession->removeRtpInstance(mRtpInstances[i]);RtspServer::disconnectionCallback关闭连接，删除一个RtspConnection
+这样当vlc关闭后track->mRtpInstances里面空
+
+vlc默认udp请求rtp，在没有服务端没有响应后会重新以tcp请求服务端

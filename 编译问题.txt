@@ -10,6 +10,11 @@ cmake 转移主机后出错，要重新配置删除以前的（文件路径不�
 cmake 配置了cpp只能对cpp有效对c没有效果
 警告显示-Wunused-but-set-variable，意思就是变量没有被使用。要是我们不想看到这样的警告，则在编译中加入 –Wno-unused-but-set-variable即可。再来编译，就不会产生warning了。
 函数返回值是类的对象时，如果没有return一个对象则会引起segmentfault
-
+变量名和函数名相同：明显调用的表达式前的括号必须具有(指针)函数类型
+Makefile在引入库时好像libjrtp.so.3.11.2这种和libjrtp.so同时存在时，只需要指定一个ljrtp就行了不要在加一个-ljrtp.so.3.11.2
+Makefile当头文件中有改动时有时不会检测到变动不会重新编译，需要设置过。
+将头文件放在了作用域里面，编译出错
+Makefile可能只读，修改不能保存，出错
+一个库的两个版本有些区别，编译出错
 
 

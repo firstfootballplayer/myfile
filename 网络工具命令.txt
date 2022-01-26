@@ -1,12 +1,16 @@
 netstat -nat|grep 192.168.42.47:8080
 
+netstat -tunlp | grep 9090		查看指定端口号的进程情况使用命令
+lsof -i:9090			查看某个端口的占用情况使用命令：
 netstat -an |grep tcp   查看所有tcp连接包括LISTEN状态
  -c 5
 sudo tcpdump -nn -X -S 'port 6000'
+sudo tcpdump -nn -X -S udp and dst 192.168.121.91 and src 192.168.121.80
 
+（strace本身是一个进程，它启动命令行的进程，每个进程启动后发现总有一个进程（thread1默认生成的）在一直输出poll）（续：这个线程是httpclient全局变量中启动的）
  strace -t -T -v -e trace=network -e trace=desc ./cli 
-
  strace -t -T -v  ./cli 
+strace  -f 				跟踪由fork子进程系统调用
 
 valgrind --log-file=./valgrind_report.log --leak-check=full --show-leak-kinds=all --show-reachable=no --track-origins=yes ./
 –log-file 指定报告输出文件 –track-origins=yes 是否显示未定义的变量，在堆、栈中被定义没有被initialised的变量都被定义成origins。
@@ -20,3 +24,5 @@ still reachable：多数情况不是问题，比如程序是一个服务，一�
 如果你后面的程序不用或者不释放也会泄漏  valgrind在当时还不知道以后会不会泄漏
 
 git 有文件的增减时必须要add，只是文件内容变化，可以不用直接commit
+
+prof工具可以找到那20%
