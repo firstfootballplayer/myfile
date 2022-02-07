@@ -1,0 +1,25 @@
+list -  	显示当前行前面的源程序。
+set listsize <count>  	设置一次显示源代码的行数。
+show listsize  	查看当前listsize的设置。
+list <first>, <last> 	显示从first行到last行之间的源代码。
+list , <last> 	显示从当前行到last行之间的源代码。
+list +	往后显示源代码。
+p  v 查看当前作用域变量
+p  ::v	查看全局变量
+i  locals	查看所有局部变量
+p  v=n	设置变量
+display 	变量名使得程序每次停下来都会显示变量的值
+bt后f  n    i  locals 查看调用函数局部变量
+watch	为表达式(变量)expr设置一个观察点。一旦表达式值有变化时，马上停住程序
+awatch	指定一个变量，如果这个变量被读或者被写，则暂停程序运行，在调试器中显示信息，并等待下一个调试命令。参考rwatch和watch命令
+watchpoints看作一种特殊的断点，使用“delete <断点号>”删除。
+为断点号bnum指定一个命令列表。当程序被该断点停住时，gdb会依次运行命令列表中的命令。 
+例如：
+break foo if x>0
+commands
+printf "x is %d/n",x
+continue
+end
+
+Ctrl-C	在当前位置停止执行正在执行的程序，断点在当前行
+return	强制从当前函数返回
