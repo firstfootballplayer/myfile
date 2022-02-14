@@ -1,3 +1,5 @@
 http头部的host要写对方的ip和port  or域名，不能写错。这个应该是必填项
 clivlc.sin_addr.s_addr = htonl(inet_addr("192.168.121.91"));这样调用后字节序反了，可能和inet_addr不会判断本机大小端直接转，而htonl会判断
 结果本机是小端又转了一次等于没有转。调一个够了（inet_addr不会自己判断本机的大小端）
+unix域套接字比通信两端位于同一主机的tcp套接字快一倍
+connect错误时返回可读可写

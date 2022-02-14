@@ -1,8 +1,0 @@
-有一个//gitlab.com/AOMediaCodec/SVT-AV1.git && \中改成github
-配置是config 的安装路径改一下 到usr/lib下
-
-/usr/include/x86_64-linux-gnu/libavutil/common.h:30:2: error: #error missing -D__STDC_CONSTANT_MACROS / #define __STDC_CONSTANT_MACROS
- #error missing -D__STDC_CONSTANT_MACROS / #define __STDC_CONSTANT_MACROS
-#if defined(__cplusplus) && !defined(__STDC_CONSTANT_MACROS) && !defined(UINT64_C)
-#error missing -D__STDC_CONSTANT_MACROS / #define __STDC_CONSTANT_MACROS
-包含这个头文件时不能用c++的只能用c

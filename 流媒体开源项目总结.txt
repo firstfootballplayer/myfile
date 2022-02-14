@@ -9,7 +9,7 @@ sdpSessionTime，mediaInfoMap里面有audio和video的信息），在while中查
 记录了audio，vedio这样不能复用多个源的时候重复时会跳过）中，没有则创建一个，将sdp中的数据复制给它，然后放入MediaSessionMap
 MediaSession中保存和媒体相关的信息，rtp的对象等等。在Client.DoSETUP("video", false);中确认创建audio还是vedio
 Client.SetVideoByeFromServerClbk(ByeFromServerClbk);在MyRTPUDPSession::OnRemoveSource(RTPSourceData *dat)中执行
-
+ 
 sip协议：
 via 和user agent可以确定对方是谁
 branch一次问答，callid一次功能请求（register）
