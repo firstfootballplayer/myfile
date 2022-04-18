@@ -26,3 +26,16 @@ still reachable：多数情况不是问题，比如程序是一个服务，一�
 git 有文件的增减时必须要add，只是文件内容变化，可以不用直接commit
 
 prof工具可以找到那20%
+
+perf record  -e cpu-clock ./t1 
+sudo  perf script -i ./perf.data &> ./perf.unfold
+sudo ./stackcollapse-perf.pl ~/gb28181/bin/perf.data &> ~/gb28181/bin/perf.folded
+sudo ./flamegraph.pl ~/gb28181/bin/perf.folded > ~/gb28181/bin/perf.svg
+
+系统平均负载被定义为在特定时间间隔内运行队列中的平均进程数。如果一个进程满足以下条件则其就会位于运行队列中：
+它没有在等待I/O操作的结果，它没有主动进入等待状态(也就是没有调用'wait')，没有被停止(例如：等待终止)
+一般来说，每个CPU内核当前活动进程数不大于3，则系统运行表现良好！当然这里说的是每个cpu内核，也就是如果你的主机是四核cpu的话，那么只要uptime最后输出的一串字符数值小于12即表示系统负载不是很严重.
+一个大循环程序为1
+cat /proc/loadavg	除了前3个数字表示平均进程数量外，后面的1个分数，分母表示系统进程总数，分子表示正在运行的进程数；最后一个数字表示最近运行的进程ID
+
+        

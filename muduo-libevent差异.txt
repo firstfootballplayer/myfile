@@ -1,3 +1,8 @@
 muduo注重多线程的细节，做了很多同步互斥，libevent单线程，需要用户实现多线程
 跨平台差异
 定时器用timerfd精度远高于select超时精度（毫秒）用set管理定时时间，
+
+吞吐量：asio 15   libevent 18		ping pong 测试，
+事件处理效率 libevent 总体接近，并发大10000 活动数1000muduo占优，活动100并发1000到3wlibevent强
+
+

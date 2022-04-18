@@ -16,7 +16,7 @@ set debug-file-directory可不进入c标准库c++还是能进
 
 windows FILE打开510最多，用完释放，不释放fopen返回null，在调用fwrite会出现expresssion :(stream = null)
 
-时间跨度太大，几百万跳信息，一直new进vec导致allocator_bad,后查看vs进程内存，发现达到了2g
+时间跨度太大，几百万信息，一直new进vec导致allocator_bad,后查看vs进程内存，发现达到了2g
 
 自己写了select后，用strace发现，select一直返回1，说明一直有事件发生，日志看到timefd read error，想自己没有添加过定时器事件怎么会
 定时器回调函数一直在调用，用pause在timer的构造函数看看有没有生成过定时器，发现没有，在strace里看到select的fd有3,4,5有两个怎么会
