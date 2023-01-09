@@ -1,0 +1,11 @@
+开发板启动后卡在random: nonblocking pool is initialized不能输入  可能是securecrt过期了，在它的终端不能输入，换mobaxterm好了
+YAML:163:1: error: invalid boolean
+SpacesInCStyleCastParentheses:  false
+^
+Error reading /home/zjm/muduo/.clang-format: Invalid argument   注释掉相应行好了（'...'应该是这个引起的）
+
+git上传出现文件过大，删除原来的.git文件夹，重新init上传
+
+lstrace出现mcount和 SIGPROF (Profiling timer expired) ---这是因为加入了-pg导致的
+
+在属性-终端-键盘里勾选“将左ALT用做Meta键”，就可以了。
